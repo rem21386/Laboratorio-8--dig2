@@ -7,6 +7,9 @@
 #define TFT_DC    4
 #define TFT_RST   6
 
+//Pin para la SD
+#define SD_CS     10
+
 //Se definen los pines en la pantalla
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
 
@@ -24,6 +27,13 @@ void setup() {
   tft.setTextSize(2);
   tft.setTextColor(ILI9341_WHITE);
   tft.print("Menu de Opciones");
+
+  //Luego se revisa si la SD está disponible y si si se imprime que está lista para usarse.
+  if (SD.begin(SD_CS)) {
+    Serial.println("Tarjeta SD lista");
+  } else {
+    Serial.println("fallo de la tarjeta SD!");
+  }
 
   //Se limpia la pantalla
   delay(2000);
@@ -134,5 +144,41 @@ void executeOption(const char *filename) {
     }
     delay(100);
   }
+}
+
+//Función para subir texto a un archivo de la SD desde el código, se usa para subir el texto ingresado por el usuario
+void uploadTextFile(const char *filename, const char *content) {
+  File file = SD.open(filename, FILE_WRITE);
+  if (file) {
+    file.print(content);
+    file.close();
+    Serial.println(filename + String(" Archivo subido exitosamente."));
+  } else {
+    Serial.println("Error al abrir el archivo.");
+  }
+}
+
+//Función para leer el texto que manda el usuario y subirlo al archivo de texto de la imagen 4
+void uploadUserText(const char *filename) {
+  tft.fillScreen(ILI9341_BLACK);
+
+  Serial.println("Ingresar el texto de la imagen 4 (Escribir '0' al terminar):");
+
+  // Leer lo que sube el usuario hasta que se detecta un 0
+  String userText = "";
+  while (true) {
+    if (Serial.available() > 0) {
+      char c = Serial.read();
+      if (c == '0') {
+        break; // Salir del loop cuando se presiona el 0
+      } else {
+        userText += c;
+      }
+    }
+    delay(100);
+  }
+
+  //Llamar a la función anterior para subir el texto al archivo
+  uploadTextFile(filename, userText.c_str());
 }
 
