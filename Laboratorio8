@@ -1,6 +1,8 @@
+//Se incluyen las librerías para la pantalla y la microSD
 #include <Adafruit_GFX.h>
 #include <Adafruit_ILI9341.h>
 #include <SPI.h>
+#include <SD.h>
 
 //Pines para la pantalla ILI9341
 #define TFT_CS    5
@@ -40,7 +42,7 @@ void setup() {
   tft.fillScreen(ILI9341_BLACK);
 }
 
-  ////////////////////////LOOP//////////////////////////////
+////////////////////////LOOP//////////////////////////////
 void loop() {
   //Se le despliegan al usuario su 5 opciones
   tft.setCursor(20, 20);
@@ -64,10 +66,15 @@ void loop() {
   tft.setCursor(20, 150);
   tft.print("4. Imagen 4");
 
+  //Opción para guardar nueva imagen
+  tft.setCursor(20, 180);
+  tft.print("5. Editar imagen 4");
+
   //Se elige la opción escribiendo el número en el monitor serial
   if (Serial.available()) {
     int choice = Serial.parseInt();
-  //Se cambia de estado dependiendo de que número se presiona.
+
+    //Se cambia de estado dependiendo de que número se presiona.
     switch (choice) {
 
       //Para los casos 1 al 4 se llama a la función "executeOpction"
