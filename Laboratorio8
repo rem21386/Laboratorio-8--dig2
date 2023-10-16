@@ -86,3 +86,53 @@ void loop() {
   delay(100);
 }
 
+//La función executeOption imprime en la pantalla la imagen guardada en el archivo que se le ingresa cuando la mandamos a llamar.
+void executeOption(const char *filename) {
+  tft.fillScreen(ILI9341_BLACK);
+
+  File file = SD.open(filename);
+  if (file) {
+    int x = 0; // Posición inicial en X para el texto
+    int y = 0; // Posición inicial en Y para el texto
+    int lineHeight = 20; // Altura de cada línea
+
+    while (file.available()) {
+      char c = file.read();
+
+      if (c == '\n') {
+        // Moverse a la siguiente línea
+        x = 20; // Resetear la posición X
+        y += lineHeight;
+      } else {
+        // Escribir el caracter en la pantalla
+        tft.setCursor(x, y);
+        tft.print(c);
+
+        // Moverse a la siguiente posición
+        x += tft.getCursorX() - x;
+      }
+    }
+
+    file.close();
+
+    //Si no se encuentra el archivo imprimir que hubo un error abriendo el archivo
+  } else {
+    tft.setCursor(20, 20);
+    tft.setTextSize(2);
+    tft.setTextColor(ILI9341_WHITE);
+    tft.print("Error abriendo archivo.");
+  }
+
+  //Regresar al menú principal si se presiona el 0
+  while (true) {
+    if (Serial.available()) {
+      char backOption = Serial.read();
+      if (backOption == '0') {
+        tft.fillScreen(ILI9341_BLACK);
+        break;
+      }
+    }
+    delay(100);
+  }
+}
+
