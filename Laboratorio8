@@ -1,1 +1,88 @@
+#include <Adafruit_GFX.h>
+#include <Adafruit_ILI9341.h>
+#include <SPI.h>
+
+//Pines para la pantalla ILI9341
+#define TFT_CS    5
+#define TFT_DC    4
+#define TFT_RST   6
+
+//Se definen los pines en la pantalla
+Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
+
+/////////////////SETUP/////////////////
+void setup() {
+  Serial.begin(115200);
+
+  //Se comienza la comunicación con la pantalla
+  tft.begin();
+  tft.setRotation(1);
+
+  //Se pone el cursor donde se desea y se imprime sólo una vez que viene el menú de opciones
+  tft.fillScreen(ILI9341_BLACK);
+  tft.setCursor(20, 20);
+  tft.setTextSize(2);
+  tft.setTextColor(ILI9341_WHITE);
+  tft.print("Menu de Opciones");
+
+  //Se limpia la pantalla
+  delay(2000);
+  tft.fillScreen(ILI9341_BLACK);
+}
+
+  ////////////////////////LOOP//////////////////////////////
+void loop() {
+  //Se le despliegan al usuario su 5 opciones
+  tft.setCursor(20, 20);
+  tft.setTextSize(2);
+  tft.setTextColor(ILI9341_WHITE);
+  tft.print("Seleccionar Opcion:");
+  
+  //Primera imagen
+  tft.setCursor(20, 60);
+  tft.print("1. Imagen 1");
+
+  //Segunda imagen
+  tft.setCursor(20, 90);
+  tft.print("2. Imagen 2");
+
+  //Tercera imagen
+  tft.setCursor(20, 120);
+  tft.print("3. Imagen 3");
+
+  //Imagen guardad por el usuario
+  tft.setCursor(20, 150);
+  tft.print("4. Imagen 4");
+
+  //Se elige la opción escribiendo el número en el monitor serial
+  if (Serial.available()) {
+    int choice = Serial.parseInt();
+  //Se cambia de estado dependiendo de que número se presiona.
+    switch (choice) {
+
+      //Para los casos 1 al 4 se llama a la función "executeOpction"
+      case 1:
+        executeOption("option1.txt");
+        break;
+
+      case 2:
+        executeOption("option2.txt");
+        break;
+
+      case 3:
+        executeOption("option3.txt");
+        break;
+
+      case 4:
+        executeOption("option4.txt");
+        break;
+
+      //Para el caso 5 se ejecuta la función "uploadUserText"
+      case 5:
+        uploadUserText("option4.txt");
+        break;
+    }
+  }
+  delay(100);
+}
 
